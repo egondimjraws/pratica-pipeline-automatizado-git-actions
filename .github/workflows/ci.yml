@@ -1,0 +1,65 @@
+name: Node.js CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x, 20.x]
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Configurar Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Instalar dependências
+      run: npm ci
+
+    - name: Executar build
+      run: npm run build
+
+    - name: Executar testes
+      run: npm test
+
+    - name: Upload de relatórios de teste
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-reports-node-${{ matrix.node-version }}
+        path: |
+          coverage/
+          test-results/
+        retention-days: 7
+
+  security-scan:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: always()
+
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+
+    - name: Verificar vulnerabilidades npm
+      run: |
+        npm audit --json > npm-audit-report.json || true
+        echo "Relatório de auditoria gerado"
+
+    - name: Upload do relatório de auditoria
+      uses: actions/upload-artifact@v4
+      with:
+        name: npm-audit-report
+        path: npm-audit-report.json
+        retention-days: 7

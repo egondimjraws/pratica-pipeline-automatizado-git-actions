@@ -1,0 +1,54 @@
+{
+  "name": "pipeline-git-actions",
+  "version": "1.0.0",
+  "description": "Projeto Node.js para pipeline CI/CD com GitHub Actions",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo '✅ Build executado com sucesso!' && mkdir -p dist && cp server.js dist/",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --coverage --ci --testResultsProcessor=jest-junit",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write '**/*.js'",
+    "audit": "npm audit"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "nodemon": "^3.0.1",
+    "eslint": "^8.56.0",
+    "prettier": "^3.1.1",
+    "jest-junit": "^16.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "coverage",
+    "testMatch": [
+      "**/test/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "server.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "clover",
+      "json"
+    ]
+  },
+  "keywords": [
+    "nodejs",
+    "github-actions",
+    "ci-cd",
+    "pipeline"
+  ],
+  "author": "Carlos Henrique",
+  "license": "MIT"
+}
